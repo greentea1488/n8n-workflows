@@ -1,4 +1,4 @@
-# n8n Workflows Collection — by Alexey Janikin
+# n8n Workflows Collection
 
 Коллекция рабочих и продвинутых воркфлоу для **n8n**, собранных из реальных проектов: Telegram‑боты, мультимодальные ассистенты, RAG, интеграции с Bitrix24, финансы и автоматизация рутины.
 
