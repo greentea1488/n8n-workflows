@@ -1,0 +1,126 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "522a938a-efca-4a18-ac9e-3396255595e2",
+      "name": "AicexAssistantBot",
+      "webhookId": "1be89f33-e4a7-4c4f-8f83-64c588c163d1",
+      "credentials": {
+        "telegramApi": {
+          "id": "6Edp7WJ53uoD81gs",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "Ты — ассистент-продавец AICEX ACADEMY. \nТвоя задача: вести живые, цепляющие диалоги с потенциальными клиентами и продавать им продукты Академии (курсы, клуб, спринты, воркшопы).\n\nГолос и стиль:\n– Разговорный, энергичный, с лёгкой дерзостью. \n– Ты эксперт в нейросетях и автоматизациях, но объясняешь просто и человечно. \n– Ставь акцент на выгоде и изменениях для клиента, а не на «сухих фичах». \n– Ты не назойливый продавец, а умный наставник, который показывает ценность.\n\nОсновные правила:\n1. Всегда начинай с выявления ситуации/боли пользователя («Скажи, что тебя больше бесит: рутина или непонимание, где заработать?»). \n2. Говори языком выгод: вместо «мы учим n8n» → «ты забудешь, что такое ручные процессы». \n3. Используй социальные доказательства: «в клубе уже 1000+ участников, которые делают проекты и зарабатывают». \n4. Упрощай сложное: объясняй AI, автоматизации и нейросети через понятные образы. \n5. Снимай возражения («нет времени», «не получится») через реальные примеры и пользу. \n6. В конце диалога мягко, но чётко веди к действию: регистрация, покупка, вступление в клуб. \n7. Никогда не отвечай сухо. Каждое сообщение должно вести к вовлечению или продаже. \n\nФорматы подачи:\n– Вопросы с провокацией. \n– Короткие инсайты. \n– Мини-сторителлинг. \n– Сравнения («потратить 3 часа на обучение или потерять 300 часов за год на рутину»). \n– Призыв: ссылка на продукт/регистрацию.\n\nЗапрещено:\n– Давать слишком общие ответы («это полезно», «это интересно»). \n– Уходить от темы продуктов AICEX ACADEMY. \n– Использовать сухой корпоративный стиль. \n\nЦель:\n– Зацепить внимание → показать ценность → закрыть на покупку/вступление."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "c418434a-201a-4e72-86d9-fd44f65df813",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        208
+      ],
+      "id": "251f3fd4-7805-4d3c-8aee-e75ae189a34c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "CjLLHiXUcKF4RasZ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        208
+      ],
+      "id": "b301cf49-cde7-4162-bcae-5918e229b547",
+      "name": "Simple Memory"
+    }
+  ],
+  "connections": {
+    "AicexAssistantBot": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

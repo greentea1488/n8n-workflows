@@ -1,0 +1,1405 @@
+{
+  "name": "neuroCRM (test)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fbc4cb53-5f89-43ac-8cb8-74c12dd8b97b",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        -160
+      ],
+      "id": "94f5d8bf-712a-4fb3-b8a8-33869883cf34",
+      "name": "Webhook",
+      "webhookId": "fbc4cb53-5f89-43ac-8cb8-74c12dd8b97b"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fabe5f41-d595-4e68-b1b6-62b63df2b090",
+              "leftValue": "={{ $json.body.event }}",
+              "rightValue": "ONCRMDEALADD",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        -160
+      ],
+      "id": "61d4d0e4-65bc-40d5-a299-b4324807e48f",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d2ba346e-0584-415f-ae6d-5d1cd0444d62",
+              "leftValue": "={{ $('Webhook').item.json.body['auth[application_token]'] }}",
+              "rightValue": "={{ $vars.BitrixAuthToken }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        -256
+      ],
+      "id": "efcd2e36-aa2c-410c-82fc-a6f4d0a1412b",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://b24-ij8x6k.bitrix24.ru/rest/1/gaf0kcmnfmk8qrx3/crm.deal.get.json",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"id\": \"{{$json.dealId}}\" }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        896,
+        -352
+      ],
+      "id": "c1053ce5-f896-4f36-a316-d7d25fbd71e9",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const b = $json.body;\nreturn {\n  event: b.event,\n  dealId: b['data[FIELDS][ID]'],\n  token: b['auth[application_token]'],\n  domain: b['auth[domain]'],\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        -352
+      ],
+      "id": "d24f2b15-6b73-4bb5-a659-56361025e3e4",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "15939436-cbb9-4c41-a09b-baa34b4cfc39",
+              "leftValue": "={{ $json.result.STAGE_ID }}",
+              "rightValue": "NEW",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1120,
+        -352
+      ],
+      "id": "ef5cbc39-f6be-4289-8fb2-4064ccd05bd4",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e1fdf573-2017-4141-b332-2426f5d096ca",
+              "name": "dealId",
+              "value": "={{ $json.result.ID }}",
+              "type": "string"
+            },
+            {
+              "id": "2d575758-b770-46f7-af6e-983e9dd2726e",
+              "name": "violationUrl",
+              "value": "={{ $json.result.UF_CRM_1755087848686 }}",
+              "type": "string"
+            },
+            {
+              "id": "1fe387ec-1baf-45b6-a278-67c7a9aa2bc8",
+              "name": "authorRaw",
+              "value": "={{ $json.result.UF_CRM_1755165943 }}",
+              "type": "string"
+            },
+            {
+              "id": "a8408144-6442-41be-9997-eaf77ccbbcd8",
+              "name": "respondentNote",
+              "value": "={{ $json.result.UF_CRM_1755166358 }}",
+              "type": "string"
+            },
+            {
+              "id": "9678fd3a-98fc-4bfd-a08a-2dc2d99d10da",
+              "name": "companyId",
+              "value": "={{ $json.result.COMPANY_ID }}",
+              "type": "string"
+            },
+            {
+              "id": "28a6b6dc-76c9-4ac9-9fb5-3f2f5008a935",
+              "name": "contactId",
+              "value": "={{ $json.result.CONTACT_ID }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1344,
+        -448
+      ],
+      "id": "5a907f54-bb2a-4268-bace-df7e5ab058cd",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Берём поля из текущей ноды\nconst dealId       = $json.dealId || \"—\";\nconst dealTitle    = $json.dealTitle || \"—\";\nconst violationUrl = $json.violationUrl || \"—\";\nconst evidenceLink = $json.evidenceLink || \"—\";\nconst authorRaw    = ($json.authorRaw || \"\").toString().trim();\n\n// Нормализуем фамилию автора\nconst author = authorRaw ? authorRaw[0].toUpperCase() + authorRaw.slice(1).toLowerCase() : \"Автор\";\n\n// Пытаемся достать email из замечания\nconst note = ($json.respondentNote || \"\").toString();\nconst emailMatch = note.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}/i);\nconst emailTo = emailMatch ? emailMatch[0] : \"info@example.com\";\n\nconst subject = `Претензия по нарушению №${dealId}`;\n\nconst body = `Добрый день!\nНастоящим письмом сообщаем, что на сайте, администрируемом Вами — ${violationUrl} — размещено изображение, автором которого является ${author}, профессиональный фотограф, обладающий исключительными правами на соответствующее произведение.\nСогласно договору доверительного управления исключительные права на данное изображение переданы в доверительное управление ИП Богдан Наталье Александровне, которая уполномочена от имени правообладателя принимать меры по защите авторских прав.\nФакт незаконного использования изображения зафиксирован, в том числе скриншотами и данными из архивных источников. Использование произведения без разрешения автора, без указания авторства и в коммерческих целях (для продвижения товара или услуги) нарушает положения статей 1229, 1259, 1270 и 1301 ГК РФ и является незаконным.\n\nВ связи с этим требуем:\n1. Немедленно прекратить любое использование изображения;\n2. В течение 10 календарных дней предоставить документы, подтверждающие наличие у Вас прав на использование изображения (если таковые имеются);\n3. В течение 10 календарных дней выплатить компенсацию в размере 50 000 рублей за нарушение исключительных прав на изображение.\n\nВ случае отказа от досудебного урегулирования или игнорирования требований, мы будем вынуждены обратиться в суд с иском о взыскании компенсации, судебных расходов и госпошлины. Обращаем внимание, что судебные издержки значительно увеличат вашу финансовую ответственность и составят от 70 000 рублей, из которых:\n- от 20 000 руб.  - незаконное использование;\n- от 20 000 руб.  - модификация изображения без согласия;\n- 20 000 руб. - судебные расходы (госпошлина, юр. услуги);\n- от 10 000 руб. - за длительный характер использования и отсутствие указания авторства.\nМы, однако, заинтересованы в разрешении спора в досудебном порядке и готовы предоставить дополнительные материалы по данному делу, а также ответить на ваши вопросы.\n\nС уважением,\nБогдан Наталья Александровна\n+7 (986) 089-03-52\n+7 953 452-89-35\n@BogdanNatalya\n89534528935b@mail.ru`;\n\nreturn {\n  dealId,\n  emailTo,\n  subject,\n  body,\n  violationUrl,\n  evidenceLink\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2464,
+        -544
+      ],
+      "id": "7a287b9e-ced1-4c84-96c1-f00d6133ad24",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://b24-ij8x6k.bitrix24.ru/rest/1/gaf0kcmnfmk8qrx3/crm.company.get.json",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "={{$json.companyId}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1792,
+        -544
+      ],
+      "id": "f0335fc1-8e4e-4fd9-b46e-0940880fb98f",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a0113e90-4d8e-47c1-8568-12abcb22ad45",
+              "leftValue": "={{ $json.companyId }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1568,
+        -448
+      ],
+      "id": "f83eb32f-ede6-40b5-86ce-17eb83a67385",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c215033a-f77f-458a-a8b2-de9c7210c211",
+              "name": "companyName",
+              "value": "={{ $json.result.TITLE }}",
+              "type": "string"
+            },
+            {
+              "id": "24c86938-fcb3-4617-b521-e3c1bd0f89bb",
+              "name": "companyEmail",
+              "value": "={{$json.result.EMAIL && $json.result.EMAIL[0]?.VALUE}}",
+              "type": "string"
+            },
+            {
+              "id": "d36d3995-8f0b-4317-835e-4db45524eab4",
+              "name": "companyPhone",
+              "value": "={{$json.result.PHONE && $json.result.PHONE[0]?.VALUE}}",
+              "type": "string"
+            },
+            {
+              "id": "f7bdaa44-59ee-4b79-b3ca-32d7a5a2152a",
+              "name": "dealId",
+              "value": "={{ $('If3').item.json.dealId }}",
+              "type": "string"
+            },
+            {
+              "id": "0957141d-8990-447f-87ba-8e5bb36de678",
+              "name": "violationUrl",
+              "value": "={{ $('Edit Fields').item.json.violationUrl }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2016,
+        -544
+      ],
+      "id": "4a8099b6-14cd-472e-bddc-1a2775a503e8",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = {\n  CompanyName: $json.companyName || '—',\n  CompanyINN: $json.companyINN || '',\n  CompanyOGRN: $json.companyOGRN || '',\n  CompanyAddress: $json.companyAddress || '',\n  Director: $json.companyDirector || '',\n  AuthorName: $json.authorRaw || '',\n  ViolationURL: $json.violationUrl || '',\n  CompensationSum: '50000',\n  RightholderName: 'ИП Богдан Наталья Александровна',\n  RightholderPhone: '+7 (986) 089-03-52',\n  RightholderEmail: '89534528935b@mail.ru',\n  TodayDate: new Date().toLocaleDateString('ru-RU')\n};\n\nreturn [{\n  ...$json,  // Сохраняем ВСЕ предыдущие данные, включая dealId\n  emailTo: $json.companyEmail || '',\n  apitemplatePayload: payload,\n  outputFile: `pretension_${$json.dealId}.pdf`\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        -544
+      ],
+      "id": "3f859e0a-1e6d-4431-aad8-8a248560e093",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "resource": "pdf",
+        "pdfTemplateId": "ca377b23e3bd7914",
+        "jsonParameters": true,
+        "download": true,
+        "binaryProperty": "={{ $json.outputFile || `pretension_${$json.dealId || $json.companyName || 'doc'}.pdf` }}",
+        "propertiesJson": "={\n  \"CompanyName\": \"{{ $node['Code in JavaScript2'].json.apitemplatePayload?.CompanyName || $node['Code in JavaScript2'].json.companyName || '' }}\",\n  \"CompanyINN\": \"{{ $node['Code in JavaScript2'].json.apitemplatePayload?.CompanyINN || '' }}\",\n  \"CompanyOGRN\": \"{{ $node['Code in JavaScript2'].json.apitemplatePayload?.CompanyOGRN || '' }}\",\n  \"CompanyAddress\": \"{{ $node['Code in JavaScript2'].json.apitemplatePayload?.CompanyAddress || '' }}\",\n  \"CompanyEmail\": \"{{ $node['Code in JavaScript2'].json.companyEmail || '' }}\",\n  \"Director\": \"{{ $node['Code in JavaScript2'].json.apitemplatePayload?.Director || '' }}\",\n  \"AuthorName\": \"{{ $node['Code in JavaScript2'].json.apitemplatePayload?.AuthorName || '' }}\",\n\n  \"ViolationCompanyName\": \"{{ $node['Code in JavaScript2'].json.companyName || '' }}\",\n  \"ViolationCompanyURL\": \"{{ $('Code in JavaScript2').item.json.apitemplatePayload.ViolationURL }}\",\n  \"ViolationURL\": \"{{ $node['Code in JavaScript2'].json.apitemplatePayload?.ViolationURL || $node['Code in JavaScript1'].json.violationUrl || '' }}\",\n\n  \"CompensationSum\": \"{{ String($node['Code in JavaScript2'].json.apitemplatePayload?.CompensationSum ?? 50000).replace(/\\\\B(?=(\\\\d{3})+(?!\\\\d))/g, ' ') }}\",\n\n  \"RightholderName\": \"{{ $node['Code in JavaScript2'].json.apitemplatePayload?.RightholderName || 'ИП Богдан Наталья Александровна' }}\",\n  \"RightholderINN\": \"562302322881\",\n  \"RightholderOGRNIP\": \"323565800000756\",\n  \"RightholderAddress\": \"Москва, ул. Верхние Поля, д. 28\",\n  \"RightholderEmail\": \"{{ $node['Code in JavaScript2'].json.apitemplatePayload?.RightholderEmail || '89534528935b@mail.ru' }}\",\n  \"RightholderPhone\": \"{{ $node['Code in JavaScript2'].json.apitemplatePayload?.RightholderPhone || '+7 (986) 089-03-52' }}\",\n\n  \"Date\": \"{{ $node['Code in JavaScript2'].json.apitemplatePayload?.TodayDate || (new Date()).toLocaleDateString('ru-RU') }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.apiTemplateIo",
+      "typeVersion": 1,
+      "position": [
+        3104,
+        -544
+      ],
+      "id": "f80de337-f587-4cb8-9518-8c276bdb8cb1",
+      "name": "Create a pdf",
+      "credentials": {
+        "apiTemplateIoApi": {
+          "id": "sXOX2vUdSL69JMtj",
+          "name": "APITemplate.io account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ac11f924-c753-4c5b-bb90-fdcf5e5ba188",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "success",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "5aab23fa-8e3c-4737-b851-faef011ce9ca",
+              "leftValue": "={{ $json.download_url }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3328,
+        -544
+      ],
+      "id": "d4304340-dda2-4142-b09b-ae1bbd15796f",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "destinationKey": "attachment",
+        "options": {
+          "encoding": "base64"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        3776,
+        -640
+      ],
+      "id": "2a3df79e-fadd-419b-a83c-7b20c0643c13",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.download_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3552,
+        -640
+      ],
+      "id": "3ef74558-b508-49e7-a551-c4ef3bb15e10",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "08ff668c-2238-415e-a76b-7e25f63ca51d",
+              "name": "subject",
+              "value": "={{ $('Code in JavaScript1').item.json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "04711a45-b99c-4cd4-b060-487619d245b8",
+              "name": "body",
+              "value": "={{ $('Code in JavaScript1').item.json.body }}",
+              "type": "string"
+            },
+            {
+              "id": "67c5d670-d426-4fb3-a1e4-6880d9597aeb",
+              "name": "emailTo",
+              "value": "=alexsabinovcom@gmail.com",
+              "type": "string"
+            },
+            {
+              "id": "585573a0-d417-46a8-977d-0ade8d39c585",
+              "name": "dealId",
+              "value": "={{ $('If3').item.json.dealId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4000,
+        -640
+      ],
+      "id": "bd42797e-6f22-473f-b396-d8e26dcea602",
+      "name": "Edit Fields2",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "fromEmail": "89534528935b@mail.ru",
+        "toEmail": "={{ $json.emailTo }}",
+        "subject": "={{ $node['Code in JavaScript1'].json.subject }}",
+        "emailFormat": "text",
+        "text": "={{ $node['Code in JavaScript1'].json.body }}",
+        "options": {
+          "attachments": "=attachment"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        4448,
+        -640
+      ],
+      "id": "6348e96c-1621-4c1d-a763-9be116b4dacb",
+      "name": "Send email",
+      "webhookId": "00e0468e-3221-4865-9a9f-23cc2062f410",
+      "credentials": {
+        "smtp": {
+          "id": "Ck4E1tx2IrXdypco",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  errorType: \"Неизвестное событие\",\n  errorReason: \"Получено событие: \" + ($('Webhook').item.json.body.event || \"undefined\"),\n  event: $('Webhook').item.json.body.event || \"N/A\",\n  domain: $('Webhook').item.json.body['auth[domain]'] || \"N/A\",\n  timestamp: new Date().toISOString(),\n  severity: \"low\"\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        32
+      ],
+      "id": "3d792f13-9201-47e6-bc7a-ee11807e7b16",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  errorType: \"🔴 Попытка несанкционированного доступа\",\n  errorReason: \"Неверный токен авторизации\",\n  receivedToken: $('Webhook').item.json.body['auth[application_token]'] || \"N/A\",\n  domain: $('Webhook').item.json.body['auth[domain]'] || \"N/A\",\n  ip: $('Webhook').item.json.headers['x-real-ip'] || \"N/A\",\n  timestamp: new Date().toISOString(),\n  severity: \"critical\"\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        -160
+      ],
+      "id": "22de1dc1-36ac-42f3-9e0a-050c777b71a6",
+      "name": "Code in JavaScript5"
+    },
+    {
+      "parameters": {
+        "jsCode": "const deal = $('HTTP Request').item.json.result;\n\nreturn [{\n  errorType: \"Сделка не в стадии NEW\",\n  errorReason: \"Сделка пропущена, так как находится в стадии: \" + (deal.STAGE_ID || \"Unknown\"),\n  dealId: deal.ID || \"N/A\",\n  dealTitle: deal.TITLE || \"Без названия\",\n  currentStage: deal.STAGE_ID || \"Unknown\",\n  timestamp: new Date().toISOString(),\n  severity: \"info\"\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        -256
+      ],
+      "id": "5b1b76ed-b229-4ee1-97fd-d6956c164736",
+      "name": "Code in JavaScript6"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  errorType: \"Отсутствует компания\",\n  errorReason: \"У сделки не указана компания\",\n  dealId: $json.dealId || \"N/A\",\n  contactId: $json.contactId || \"N/A\",\n  timestamp: new Date().toISOString(),\n  severity: \"medium\"\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        -352
+      ],
+      "id": "bf637c7c-c85a-4d20-a72a-3eb6bd846702",
+      "name": "Code in JavaScript7"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  errorType: \"🔴 Ошибка генерации PDF\",\n  errorReason: \"APITemplate.io не смог создать PDF\",\n  dealId: $('If3').json.dealId || \"N/A\",\n  pdfStatus: $('Create a pdf').item.json.status || \"unknown\",\n  pdfError: $('Create a pdf').item.json.error || \"No error details\",\n  timestamp: new Date().toISOString(),\n  severity: \"critical\"\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3552,
+        -448
+      ],
+      "id": "23144035-1233-4f53-b628-27f8581a3cd3",
+      "name": "Code in JavaScript8"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e8430512-8af0-481b-9b95-780be260e601",
+              "leftValue": "={{ $json.accepted[0] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4896,
+        -640
+      ],
+      "id": "0091627b-f43e-4185-bb9d-fef4db829cee",
+      "name": "If6"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Результат отправки email\nconst emailResult = {\n  accepted: $json.accepted || [],\n  rejected: $json.rejected || [],\n  messageId: $json.messageId || \"N/A\",\n  response: $json.response || \"\"\n};\n\n// Данные из Code in JavaScript3\nconst bitrixPayload = $('Code in JavaScript3').item.json;\n\n// Пытаемся получить dealId из разных источников\nlet dealId = \"0\";\n\ntry {\n  dealId = $('Edit Fields2').item.json.dealId || \n           bitrixPayload.fields.OWNER_ID || \n           \"0\";\n} catch (e) {\n  console.log(\"Error getting dealId:\", e.message);\n}\n\n// Пытаемся получить emailTo\nlet emailTo = \"N/A\";\ntry {\n  emailTo = $('Edit Fields2').item.json.emailTo || \"N/A\";\n} catch (e) {\n  console.log(\"Error getting emailTo:\", e.message);\n}\n\n// Пытаемся получить companyName\nlet companyName = \"N/A\";\ntry {\n  companyName = $('Edit Fields1').item.json.companyName || \"N/A\";\n} catch (e) {\n  console.log(\"Error getting companyName:\", e.message);\n}\n\n// Объединяем\nreturn [{\n  // Email результат\n  accepted: emailResult.accepted,\n  rejected: emailResult.rejected,\n  messageId: emailResult.messageId,\n  response: emailResult.response,\n  emailSuccess: emailResult.accepted.length > 0 && emailResult.rejected.length === 0,\n  \n  // Дополнительные данные\n  dealId: dealId,\n  emailTo: emailTo,\n  companyName: companyName,\n  \n  // Данные для Битрикс\n  fields: bitrixPayload.fields,\n  params: bitrixPayload.params\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4672,
+        -640
+      ],
+      "id": "9450338c-013f-48d9-b482-3c95667fa634",
+      "name": "Code in JavaScript9"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://b24-ij8x6k.bitrix24.ru/rest/1/gaf0kcmnfmk8qrx3/crm.deal.update.json",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{$json}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5792,
+        -640
+      ],
+      "id": "05c9d63a-e473-4045-aec8-1bce3c93960d",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  id: $json.dealId,\n  fields: {\n    STAGE_ID: \"PREPARATION\",\n    COMMENTS: \n      \"✅ Претензия отправлена автоматически\\n\\n\" +\n      \"Время: \" + new Date().toLocaleString('ru-RU') + \"\\n\" +\n      \"Получатель: \" + $json.emailTo + \"\\n\" +\n      \"Message ID: \" + ($json.messageId || \"N/A\")\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5120,
+        -640
+      ],
+      "id": "25500169-e7ed-4212-98ec-0e3275c0d880",
+      "name": "Code in JavaScript10"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "27b1928a-1fe5-4cb4-82f3-e897da464ff4",
+              "leftValue": "={{ $json.fields.STAGE_ID }}",
+              "rightValue": "PREPARATION",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        5344,
+        -640
+      ],
+      "id": "5d128a38-5239-44de-ba3e-4a29bf87777c",
+      "name": "If5"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  id: $('Code in JavaScript9').item.json.dealId || \"2420\",\n  fields: {\n    STAGE_ID: \"PREPARATION\",\n    COMMENTS: \n      \"✅ Претензия отправлена автоматически\\n\\n\" +\n      \"Время: \" + new Date().toLocaleString('ru-RU') + \"\\n\" +\n      \"Получатель: \" + ($('Code in JavaScript9').item.json.emailTo || \"N/A\") + \"\\n\" +\n      \"Message ID: \" + ($('Code in JavaScript9').item.json.messageId || \"N/A\")\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5568,
+        -640
+      ],
+      "id": "9db41cc7-8115-405a-be97-8f73439475b2",
+      "name": "Code in JavaScript11"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d49dfc85-ee55-44dc-9238-1d8d6320f938",
+              "leftValue": "={{ $json.result }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        6016,
+        -640
+      ],
+      "id": "b4f3dbc6-6454-423e-adba-469135e47d95",
+      "name": "If7"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://b24-ij8x6k.bitrix24.ru/rest/1/gaf0kcmnfmk8qrx3/tasks.task.add.json",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    \"fields\": {\n      \"TITLE\": \"Контроль ответа на претензию #\" + $('Edit Fields3').item.json.dealId + \" (День 3)\",\n      \"DESCRIPTION\": \n        \"Проверка ответа на претензию через 3 дня\\n\\n\" +\n        \"Сделка: #\" + $('Edit Fields3').item.json.dealId + \"\\n\" +\n        \"Компания: \" + $('Edit Fields3').item.json.companyName + \"\\n\" +\n        \"Email: \" + $('Edit Fields3').item.json.emailTo + \"\\n\" +\n        \"Дата отправки: \" + new Date().toLocaleDateString('ru-RU') + \"\\n\" +\n        \"Message ID: \" + $('Edit Fields3').item.json.messageId + \"\\n\\n\" +\n        \"Задачи:\\n\" +\n        \"1. Проверить почту на наличие ответа\\n\" +\n        \"2. Проверить статус нарушения по ссылке\\n\" +\n        \"3. Если ответа нет - ожидать до 5 дней\",\n      \"RESPONSIBLE_ID\": 1,\n      \"PRIORITY\": 1,\n      \"DEADLINE\": new Date(Date.now() + 3 * 24 * 3600000).toISOString(),\n      \"UF_CRM_TASK\": [\"D_\" + $('Edit Fields3').item.json.dealId],\n      \"TAGS\": [\"pretension_control\", \"day_3\"]\n    }\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6464,
+        -640
+      ],
+      "id": "7368f20e-8dc1-4dfa-a34c-6fa382a9c21f",
+      "name": "HTTP Request5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "41a3e23a-0fc1-42fa-8ada-d0eb4b94c466",
+              "name": "dealId",
+              "value": "={{ $('If6').item.json.dealId }}",
+              "type": "string"
+            },
+            {
+              "id": "8a09340f-1fc3-4d88-a3f9-0e37a9615797",
+              "name": "emailTo",
+              "value": "={{ $('If6').item.json.emailTo }}",
+              "type": "string"
+            },
+            {
+              "id": "f3073588-07d2-438c-8f6f-d728d6b8cb0a",
+              "name": "companyName",
+              "value": "={{ $('If6').item.json.companyName }}",
+              "type": "string"
+            },
+            {
+              "id": "0c3cadc1-99ec-4ba0-ac76-19270164d8f3",
+              "name": "messageId",
+              "value": "={{ $('If6').item.json.messageId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        6240,
+        -640
+      ],
+      "id": "5320bf7c-9a26-4507-bfda-8e26f9a35bad",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "41a3e23a-0fc1-42fa-8ada-d0eb4b94c466",
+              "name": "dealId",
+              "value": "={{ $('If6').item.json.dealId }}",
+              "type": "string"
+            },
+            {
+              "id": "8a09340f-1fc3-4d88-a3f9-0e37a9615797",
+              "name": "emailTo",
+              "value": "={{ $('If6').item.json.emailTo }}",
+              "type": "string"
+            },
+            {
+              "id": "f3073588-07d2-438c-8f6f-d728d6b8cb0a",
+              "name": "companyName",
+              "value": "={{ $('If6').item.json.companyName }}",
+              "type": "string"
+            },
+            {
+              "id": "0c3cadc1-99ec-4ba0-ac76-19270164d8f3",
+              "name": "messageId",
+              "value": "={{ $('If6').item.json.messageId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        6688,
+        -640
+      ],
+      "id": "6cbd6811-afa6-49eb-980e-77a67924b768",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://b24-ij8x6k.bitrix24.ru/rest/1/gaf0kcmnfmk8qrx3/tasks.task.add.json",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ \n  {\n    \"fields\": {\n      \"TITLE\": \"Контроль ответа на претензию #\" + $('Edit Fields4').item.json.dealId + \" (День 5)\",\n      \"DESCRIPTION\":\n        \"Проверка ответа на претензию через 5 дней\\n\\n\" +\n        \"Сделка: #\" + $('Edit Fields4').item.json.dealId + \"\\n\" +\n        \"Компания: \" + $('Edit Fields4').item.json.companyName + \"\\n\" +\n        \"Email: \" + $('Edit Fields4').item.json.emailTo + \"\\n\" +\n        \"Дата отправки: \" + new Date().toLocaleDateString('ru-RU') + \"\\n\" +\n        \"Message ID: \" + $('Edit Fields4').item.json.messageId + \"\\n\\n\" +\n        \"Задачи:\\n\" +\n        \"1. Проверить почту на наличие ответа\\n\" +\n        \"2. Проверить статус нарушения по ссылке\\n\" +\n        \"3. Если ответа нет — готовиться к дню 10\",\n      \"RESPONSIBLE_ID\": 1,\n      \"PRIORITY\": 1,\n      \"DEADLINE\": new Date(Date.now() + 5 * 24 * 3600000).toISOString(),\n      \"UF_CRM_TASK\": [\"D_\" + $('Edit Fields4').item.json.dealId],\n      \"TAGS\": [\"pretension_control\", \"day_5\"]\n    }\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6912,
+        -640
+      ],
+      "id": "5570d20b-3128-4581-99c7-0320886fcf6e",
+      "name": "HTTP Request6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "41a3e23a-0fc1-42fa-8ada-d0eb4b94c466",
+              "name": "dealId",
+              "value": "={{ $('If6').item.json.dealId }}",
+              "type": "string"
+            },
+            {
+              "id": "8a09340f-1fc3-4d88-a3f9-0e37a9615797",
+              "name": "emailTo",
+              "value": "={{ $('If6').item.json.emailTo }}",
+              "type": "string"
+            },
+            {
+              "id": "f3073588-07d2-438c-8f6f-d728d6b8cb0a",
+              "name": "companyName",
+              "value": "={{ $('If6').item.json.companyName }}",
+              "type": "string"
+            },
+            {
+              "id": "0c3cadc1-99ec-4ba0-ac76-19270164d8f3",
+              "name": "messageId",
+              "value": "={{ $('If6').item.json.messageId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        7136,
+        -640
+      ],
+      "id": "6ebfa845-ee5a-43dc-bdd4-35f830afe0a5",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://b24-ij8x6k.bitrix24.ru/rest/1/gaf0kcmnfmk8qrx3/tasks.task.add.json",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{$json}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        7584,
+        -640
+      ],
+      "id": "5b7aaf74-5898-4466-8dbb-2438467ff962",
+      "name": "HTTP Request7"
+    },
+    {
+      "parameters": {
+        "jsCode": "const dealId  = $json.dealId || 0;\nconst company = $json.companyName || '';\nconst email   = $json.emailTo || '';\n\nreturn [{\n  json: {\n    fields: {\n      TITLE: `🔴 СРОЧНО: Контроль претензии #${dealId} (День 10 — КРАЙНИЙ СРОК)`,\n      DESCRIPTION:\n        \"🔴 КРИТИЧЕСКАЯ ЗАДАЧА: Истекает срок досудебного урегулирования!\\n\\n\" +\n        `Сделка: #${dealId}\\nКомпания: ${company}\\nEmail: ${email}\\n` +\n        `Дата отправки: ${new Date().toLocaleDateString('ru-RU')}\\n\\n` +\n        \"ОБЯЗАТЕЛЬНЫЕ ДЕЙСТВИЯ:\\n\" +\n        \"1) Проверить наличие ответа от нарушителя\\n\" +\n        \"2) Проверить статус нарушения (устранено/не устранено)\\n\" +\n        \"3) ЕСЛИ НЕТ ОТВЕТА: подготовить иск и передать юристу\\n\",\n      RESPONSIBLE_ID: 1,\n      PRIORITY: 2,\n      DEADLINE: new Date(Date.now() + 10 * 24 * 3600000).toISOString(),\n      UF_CRM_TASK: [`D_${dealId}`],\n      TAGS: [\"pretension_control\", \"day_10\", \"urgent\"]\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7360,
+        -640
+      ],
+      "id": "32febf05-8339-4c97-8dc1-dfa3d27cfcaa",
+      "name": "Code in JavaScript12"
+    },
+    {
+      "parameters": {
+        "jsCode": "for (const item of items) {\n  const binaryKeys = Object.keys(item.binary || {});\n  if (binaryKeys.length === 0) continue;\n\n  const firstKey = binaryKeys[0]; // например, \"pretension_2420.pdf\"\n  item.binary.attachment = item.binary[firstKey]; // скопировали бинарь в attachment\n\n  // можно по желанию удалить старое имя, чтобы не мешало\n  delete item.binary[firstKey];\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4224,
+        -640
+      ],
+      "id": "fe536d1d-fd87-4e8d-afbc-e6f6a349b298",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "url": "https://b24-ij8x6k.bitrix24.ru/~iTToU?&download=1",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "template"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2672,
+        -544
+      ],
+      "id": "b039a35f-528a-42c5-b99a-a56b5db675ae",
+      "name": "HTTP Request2"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "neurocrm.core.neuro42.ru",
+            "x-request-id": "5218bf8cccda25bf0c8749dda447ecbe",
+            "x-real-ip": "10.21.52.15",
+            "x-forwarded-for": "10.21.52.15",
+            "x-forwarded-host": "neurocrm.core.neuro42.ru",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-scheme": "https",
+            "x-scheme": "https",
+            "content-length": "379",
+            "user-agent": "Bitrix24 Webhook Engine",
+            "content-type": "application/x-www-form-urlencoded",
+            "accept-encoding": "gzip"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event": "ONCRMDEALADD",
+            "event_handler_id": "48",
+            "data[FIELDS][ID]": "2460",
+            "ts": "1762331952",
+            "auth[domain]": "b24-ij8x6k.bitrix24.ru",
+            "auth[client_endpoint]": "https://b24-ij8x6k.bitrix24.ru/rest/",
+            "auth[server_endpoint]": "https://oauth.bitrix24.tech/rest/",
+            "auth[member_id]": "336857a5ec95a96cc92147c47ec8bb77",
+            "auth[application_token]": "363mrzoehwmwf7rizf4g1ie37f376s5y"
+          },
+          "webhookUrl": "https://neurocrm.core.neuro42.ru/webhook-test/fbc4cb53-5f89-43ac-8cb8-74c12dd8b97b",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a pdf": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send email": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If6": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript9": {
+      "main": [
+        [
+          {
+            "node": "If6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript10": {
+      "main": [
+        [
+          {
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If5": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript11": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "If7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If7": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request6": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript12": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Create a pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "719359ff-a9f4-4f36-a69b-c688d6535a25",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5ead4e1777d66c00ab18281081170ab50795af19ccf34609d1033f0baf738ec2"
+  },
+  "id": "0QdDyCmSIsj3bvIV",
+  "tags": []
+}

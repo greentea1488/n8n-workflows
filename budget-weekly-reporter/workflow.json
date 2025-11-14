@@ -1,0 +1,180 @@
+{
+  "name": "dudgetSummary",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 17
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "dfb62bde-cedf-4ddd-9327-0cc3f4213780",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1NOg3jDEcyDEWt_DwMQXLzMmMKdQm8usaOqMN3APEFxg",
+          "mode": "list",
+          "cachedResultName": "Семейный бюджет Леша/Женя❤️",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NOg3jDEcyDEWt_DwMQXLzMmMKdQm8usaOqMN3APEFxg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Траты и бюджет",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NOg3jDEcyDEWt_DwMQXLzMmMKdQm8usaOqMN3APEFxg/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "413ff269-9a26-46a7-be7d-cec6d0e2a756",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ArpDv7PZOUMnM5PW",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "15338308-1a60-4bbf-8534-6e6447f3170e",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "GPT-5"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Ты — семейный финансовый аналитик. Твоя задача — каждый понедельник формировать отчёт о расходах за прошлую завершённую календарную неделю (с понедельника по воскресенье).\n\nСегодняшняя дата (ISO): {{ new Date().toISOString().slice(0,10) }}\nТебе передан JSON с данными по тратам. У каждой строки:\n\t•\tполе “Траты и бюджет” — дата в формате ДД.ММ.ГГГГ;\n\t•\tполе “col_2” — категория (строка);\n\t•\tполе “col_3” — сумма (число);\n\t•\tостальные поля игнорируй.\n\nПравила и шаги:\n\t1.\tПреобразуй «сегодня» в дату. Определи прошлую календарную неделю:\n\t•\tНеделя = понедельник…воскресенье.\n\t•\tЕсли сегодня понедельник, то «прошлая неделя» — предыдущие пн–вс.\n\t•\tЕсли сегодня не понедельник, всё равно возьми последнюю завершённую неделю (пн–вс, закончившуюся в прошлое воскресенье).\n\t2.\tРазбери входной JSON (он может быть вложенным массивом объектов). Пройди по всем элементам, вытащи поля даты, категории и суммы.\n\t•\tПарси дату из поля “Траты и бюджет” формата ДД.ММ.ГГГГ.\n\t•\tПреобразуй сумму в число; пустые/нечисловые — пропусти.\n\t•\tИгнорируй записи без даты, категории или суммы.\n\t3.\tОтфильтруй только строки, где дата попадает в выбранный диапазон прошлой недели.\n\t•\tЗаписи с годом < 2022 игнорируй.\n\t4.\tПосчитай:\n\t•\tОбщий расход за неделю (сумма по всем строкам).\n\t•\tРазбивку по категориям (сортировка по убыванию суммы).\n\t5.\tСформируй понятный текстовый отчёт на русском, пригодный для отправки в Telegram/почту:\n\nФормат ответа:\n\t•\tЗаголовок: «Отчёт по расходам за [ДД.ММ.ГГГГ]–[ДД.ММ.ГГГГ]» (диапазон прошлой недели).\n\t•\tИтог: Общая сумма: N ₽.\n\t•\tПо категориям: список «Категория — X ₽» (от большего к меньшему).\n\t•\tНаблюдение: 1–2 кратких вывода (наибольшая категория/нетипичный расход/заметное снижение или рост).\n\t•\tЕсли подходящих данных нет — напиши: «Данных за прошлую неделю нет.»\n\nТребования к стилю:\n\t•\tКоротко, по делу, без канцелярита.\n\t•\tВсе суммы указывай в рублях с пробелами-разделителями тысяч (например, 38 999 ₽).\n\nДанные (JSON для анализа):\n{{ JSON.stringify($json) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        624,
+        0
+      ],
+      "id": "e1d6967c-eca6-4445-b433-1855e24b108f",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "CjLLHiXUcKF4RasZ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "669231710",
+        "text": "={{ $json.message.content }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        976,
+        0
+      ],
+      "id": "b3150f4f-1e8e-4dde-972b-6c0612db9760",
+      "name": "Send a text message",
+      "webhookId": "2bce0af9-3dac-49d8-8b44-25ee91984ebe",
+      "credentials": {
+        "telegramApi": {
+          "id": "t7yDUXHcfrpWfw8j",
+          "name": "budgetBot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

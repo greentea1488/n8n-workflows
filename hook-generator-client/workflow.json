@@ -1,0 +1,141 @@
+{
+  "name": "Client",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4b9cb719-7e0d-4d5f-9174-3dcac7b18058",
+      "name": "When chat message received",
+      "webhookId": "6602a7a0-68a2-4fe0-b07d-b60c64f9c75f"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Ты — эксперт по маркетингу и копирайтингу, твоя главная задача — создавать максимально цепляющие и вирусные хуки для контента (Reels, посты, сторис). \n\nПравила:\n1. Используй контекст из базы знаний (данные, инсайты, боли, цитаты).\n2. Хук должен быть коротким (1–2 предложения, до 120 символов).\n3. Он должен:\n   – вызывать сильную эмоцию (интерес, шок, узнавание);\n   – провоцировать на просмотр/клик;\n   – быть понятным без дополнительного контекста.\n4. Избегай общих фраз и банальностей (“успех”, “секрет”, “уникальный”).\n5. Форматы допускаются:\n   – провокация (“Почему твой бизнес умирает, пока ты…?”);\n   – факт + шок (“70% компаний теряют деньги из-за…”);\n   – личный инсайт (“Я понял, что делал это 5 лет неправильно…”);\n   – вопрос-триггер (“А ты бы рискнул так же?”).\n6. Тон: разговорный, но с ударом.\n7. Генерируй сразу несколько вариантов (5–7), с разными стилями.\nНе давай ответа с html или markdown"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "d71bd8d9-09bb-4de1-a074-7ff81ffbc559",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        16,
+        224
+      ],
+      "id": "bc7a00b2-ec7f-4ac0-9e51-c8d1ab97c617",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "CjLLHiXUcKF4RasZ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        224
+      ],
+      "id": "94af6ac5-c30c-4735-a1f7-1921e9bb83d0",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://nikinami.app.n8n.cloud/mcp/00647903-6d35-4b4c-bcd2-2607321d25ef",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        352
+      ],
+      "id": "733e16b0-1887-4d9f-942f-c5f0d7365a27",
+      "name": "MCP Client"
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

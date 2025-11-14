@@ -1,0 +1,423 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c3f7d92c-f670-4650-bb9b-6490bbfd8d5e",
+      "name": "Telegram Trigger",
+      "webhookId": "f6a9bb34-6a2f-414f-93f9-d3a5dae12072",
+      "credentials": {
+        "telegramApi": {
+          "id": "t7yDUXHcfrpWfw8j",
+          "name": "budgetBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.voice.file_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "7d6ec9a2-1e7b-4de7-99c0-2c87ff8c285e"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "voice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b8bceb6e-7412-47fb-8c49-12c6aa779872",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "4bc22e6c-4585-4ebc-8b2c-6bff4956929c",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        -96
+      ],
+      "id": "5e4ab2a9-45d2-4a1f-a1e7-bda3b26f87c2",
+      "name": "Get a file",
+      "webhookId": "9be8ea95-c0d2-42df-bad7-3a0011f2a4c7",
+      "credentials": {
+        "telegramApi": {
+          "id": "t7yDUXHcfrpWfw8j",
+          "name": "budgetBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "7ef88918-5300-448e-93bf-3bfc999f00c5",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "openAiApi": {
+          "id": "CjLLHiXUcKF4RasZ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "40e1b73b-4976-4b78-804e-207f5ae37e3f",
+              "name": "message.text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        96
+      ],
+      "id": "feae1cb1-2624-4073-8961-fb2719ab6a24",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "Ты — персональный финансовый ассистент семьи.  \nТы анализируешь таблицу с данными (доходы и расходы) с помощью инструмента Google Sheets.  \n\nКаждый понедельни�� ты обязан:  \n1. Определить предыдущую полную календарную неделю (с понедельника по воскресенье).  \n2. Отфильтровать таблицу и выбрать все расходы за эту неделю (игнорируй данные до 2022 года).  \n3. Посчитать:  \n   – общую сумму расходов за неделю,  \n   – расходы по категориям (от большего к меньшему).  \n4. Сформировать недельный отчёт на русском языке в следующей структуре:  \n   – Заголовок: «Отчёт по расходам за [ДД.ММ.ГГГГ]–[ДД.ММ.ГГГГ]»  \n   – Общая сумма: N ₽  \n   – Разбивка по категориям (Категория — Сумма ₽)  \n   – Краткие выводы (например: «Больше всего потратили на еду» или «Расходы меньше, чем неделей ранее»).  \n\nЕсли расходов за неделю нет → напиши: «Данных за прошлую неделю нет.»  \n\nВ конце отправь готовый отчёт по электронной почте с помощью инструмента Gmail.  \nОтправляй только одно письмо за каждый запрос.  "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        96
+      ],
+      "id": "20a1e662-ea64-410c-a442-480e74c57d8f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        272
+      ],
+      "id": "37391392-e851-4848-a430-e6661c303880",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "CjLLHiXUcKF4RasZ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        688,
+        304
+      ],
+      "id": "418d737e-b10f-430f-bbbe-5c35d9b04447",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        976,
+        96
+      ],
+      "id": "094743a4-e5c7-470c-9e1b-e32d6d3c200f",
+      "name": "Send a text message",
+      "webhookId": "a4fe50de-531f-4543-a4f2-46155e1cf4a6",
+      "credentials": {
+        "telegramApi": {
+          "id": "t7yDUXHcfrpWfw8j",
+          "name": "budgetBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1NOg3jDEcyDEWt_DwMQXLzMmMKdQm8usaOqMN3APEFxg",
+          "mode": "list",
+          "cachedResultName": "Семейный бюджет Леша/Женя❤️",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NOg3jDEcyDEWt_DwMQXLzMmMKdQm8usaOqMN3APEFxg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Траты и бюджет",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NOg3jDEcyDEWt_DwMQXLzMmMKdQm8usaOqMN3APEFxg/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        848,
+        288
+      ],
+      "id": "d18dbc39-366b-44fb-881b-0a52c2321e8f",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ArpDv7PZOUMnM5PW",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "alexsabinovcom@gmail.com",
+        "subject": "From Assistant",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        784,
+        336
+      ],
+      "id": "cd0b5ab3-04ff-4928-9169-865bf0f4b235",
+      "name": "Send a message in Gmail",
+      "webhookId": "070f79d4-a6bf-4cc7-8d76-567fa8d4a46b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "yynvRIvp3Vrob4sv",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}
